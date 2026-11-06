@@ -1,0 +1,405 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz ♡</title>
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eee5ff;
+    font-family: Georgia, serif;
+    color: #49346b;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 480px;
+    background: #faf7ff;
+    border: 2px solid #d8c4fa;
+    border-radius: 18px;
+    padding: 30px 25px;
+    text-align: center;
+    box-shadow: 0 8px 25px #b69bd455;
+}
+
+.progress {
+    font-size: 13px;
+    color: #9879c4;
+    margin-bottom: 12px;
+}
+
+.progress-bar {
+    height: 7px;
+    background: #e8dcf8;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 28px;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background: #a77bdf;
+    transition: width .3s;
+}
+
+h2 {
+    font-size: 22px;
+    margin-bottom: 25px;
+    line-height: 1.4;
+}
+
+.answers {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.answer {
+    background: #f0e8fc;
+    border: 2px solid #dfcef5;
+    color: #604586;
+    padding: 14px;
+    border-radius: 12px;
+    font-family: Georgia, serif;
+    font-size: 15px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.answer:hover:not(:disabled) {
+    background: #e4d4f8;
+    border-color: #b38add;
+}
+
+.answer:disabled {
+    cursor: default;
+}
+
+.answer.correct {
+    background: #e0f4df;
+    border-color: #70b875;
+    color: #36783d;
+}
+
+.answer.wrong {
+    background: #ffe1e1;
+    border-color: #e77b7b;
+    color: #b83c3c;
+}
+
+.feedback {
+    min-height: 55px;
+    margin-top: 20px;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.feedback.correct-text {
+    color: #559b59;
+}
+
+.feedback.wrong-text {
+    color: #c64d4d;
+}
+
+.next {
+    display: none;
+    margin: 15px auto 0;
+    background: #a77bdf;
+    border: none;
+    border-radius: 10px;
+    padding: 13px 30px;
+    color: white;
+    font-family: Georgia, serif;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.next:hover {
+    background: #8e61c8;
+}
+
+.result {
+    display: none;
+}
+
+.result h2 {
+    font-size: 27px;
+}
+
+.result p {
+    line-height: 1.7;
+}
+
+.confetti {
+    position: fixed;
+    width: 9px;
+    height: 9px;
+    top: -15px;
+    z-index: 10;
+    pointer-events: none;
+    animation: fall 2.5s linear forwards;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(110vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div id="quiz">
+
+        <div class="progress" id="progress">Question 1 / 6</div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <h2 id="question"></h2>
+
+        <div class="answers" id="answers"></div>
+
+        <div class="feedback" id="feedback"></div>
+
+        <button class="next" id="next" onclick="nextQuestion()">
+            Next →
+        </button>
+
+    </div>
+
+    <div class="result" id="result">
+        <h2 id="resultTitle"></h2>
+        <p id="resultText"></p>
+        <button class="next" id="retry" onclick="restartQuiz()">
+            Try again
+        </button>
+    </div>
+
+</div>
+
+<script>
+const questions = [
+    {
+        question: "What's Arwa's cat's name?",
+        answers: ["Taboni", "miya", "maya"],
+        correct: 1
+    },
+    {
+        question: "What did you use to watch on YouTube back in 2020?",
+        answers: [
+            "Wattpad of BTS",
+            "Wattpad of mafia",
+            "Wattpad of Junkun"
+        ],
+        correct: 0
+    },
+    {
+        question: "What is the name that Khouloud teases you by instead of Riham?",
+        answers: ["Ra7ma", "ri7am", "tbnmk"],
+        correct: 0
+    },
+    {
+        question: "What's Saber fav look?",
+        answers: ["Smokey", "douyin", "naturel makeup"],
+        correct: 0
+    },
+    {
+        question: 'After the sentence "ghi rjli tlwaw wjaw 3ndk b7dhm" she said:',
+        answers: [
+            "يا اااااااااه الإحراااااااااااااج",
+            "الكرامة قيدها في الغياب",
+            "بولي و متهدريش"
+        ],
+        correct: 0
+    },
+    {
+        question: "Your own question goes here",
+        answers: ["Answer 1", "Answer 2", "Answer 3"],
+        correct: 0
+    }
+];
+
+let current = 0;
+let score = 0;
+let answered = false;
+
+const questionEl = document.getElementById("question");
+const answersEl = document.getElementById("answers");
+const feedbackEl = document.getElementById("feedback");
+const nextBtn = document.getElementById("next");
+
+function loadQuestion() {
+    answered = false;
+
+    const q = questions[current];
+
+    document.getElementById("progress").textContent =
+        `Question ${current + 1} / ${questions.length}`;
+
+    document.getElementById("progressFill").style.width =
+        `${(current / questions.length) * 100}%`;
+
+    questionEl.textContent = q.question;
+    answersEl.innerHTML = "";
+    feedbackEl.textContent = "";
+    feedbackEl.className = "feedback";
+    nextBtn.style.display = "none";
+
+    q.answers.forEach((answer, index) => {
+        const button = document.createElement("button");
+        button.className = "answer";
+        button.textContent = answer;
+
+        button.onclick = () => checkAnswer(index, button);
+
+        answersEl.appendChild(button);
+    });
+}
+
+function checkAnswer(index, selected) {
+    if (answered) return;
+
+    answered = true;
+
+    const q = questions[current];
+    const buttons = answersEl.querySelectorAll(".answer");
+
+    buttons.forEach(button => button.disabled = true);
+
+    if (index === q.correct) {
+        score++;
+
+        selected.classList.add("correct");
+        selected.textContent = "✓ " + q.answers[index];
+
+        feedbackEl.textContent = "Correct!! ♡";
+        feedbackEl.classList.add("correct-text");
+
+        confetti();
+    } else {
+        selected.classList.add("wrong");
+        selected.textContent = "✕ " + q.answers[index];
+
+        buttons[q.correct].classList.add("correct");
+
+        feedbackEl.innerHTML =
+            `Wrong! ✕<br>Correct answer: <b>${q.answers[q.correct]}</b>`;
+
+        feedbackEl.classList.add("wrong-text");
+    }
+
+    nextBtn.style.display = "block";
+
+    nextBtn.textContent =
+        current === questions.length - 1 ? "Finish ♡" : "Next →";
+}
+
+function nextQuestion() {
+    current++;
+
+    if (current < questions.length) {
+        loadQuestion();
+    } else {
+        showResult();
+    }
+}
+
+function showResult() {
+    document.getElementById("quiz").style.display = "none";
+
+    const result = document.getElementById("result");
+    result.style.display = "block";
+
+    const percentage = Math.round((score / questions.length) * 100);
+
+    document.getElementById("progressFill").style.width = "100%";
+
+    if (percentage >= 75) {
+        document.getElementById("resultTitle").textContent =
+            "YOU DID IT!! ♡";
+
+        document.getElementById("resultText").textContent =
+            `${score}/${questions.length} correct! (${percentage}%)`;
+
+        confetti();
+
+        setTimeout(() => {
+            window.location.href = "reward.html";
+        }, 2500);
+
+    } else {
+        document.getElementById("resultTitle").textContent =
+            "NOT GOOD ENOUGH...";
+
+        document.getElementById("resultText").textContent =
+            `${score}/${questions.length} correct (${percentage}%). You need at least 75% to unlock your reward.`;
+
+        document.getElementById("retry").style.display = "block";
+    }
+}
+
+function restartQuiz() {
+    current = 0;
+    score = 0;
+
+    document.getElementById("result").style.display = "none";
+    document.getElementById("quiz").style.display = "block";
+    document.getElementById("retry").style.display = "none";
+
+    loadQuestion();
+}
+
+function confetti() {
+    const colors = [
+        "#b58ae8",
+        "#d4b8f5",
+        "#9270c7",
+        "#f4d7ff",
+        "#ffffff"
+    ];
+
+    for (let i = 0; i < 45; i++) {
+        const piece = document.createElement("div");
+
+        piece.className = "confetti";
+        piece.style.left = Math.random() * 100 + "vw";
+        piece.style.background =
+            colors[Math.floor(Math.random() * colors.length)];
+
+        piece.style.animationDuration =
+            (1.5 + Math.random() * 2) + "s";
+
+        piece.style.animationDelay =
+            Math.random() * 0.5 + "s";
+
+        document.body.appendChild(piece);
+
+        setTimeout(() => piece.remove(), 4000);
+    }
+}
+
+loadQuestion();
+</script>
+
+</body>
+  </html>
+  
