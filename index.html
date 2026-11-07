@@ -63,44 +63,22 @@ body {
 }
 
 .decorations span:nth-child(1) {
-    top:10%;
-    left:7%;
-    font-size:20px;
+    top:10%;left:7%;font-size:20px;
 }
-
 .decorations span:nth-child(2) {
-    top:25%;
-    right:8%;
-    font-size:13px;
-    animation-delay:1s;
+    top:25%;right:8%;font-size:13px;animation-delay:1s;
 }
-
 .decorations span:nth-child(3) {
-    top:52%;
-    left:5%;
-    font-size:14px;
-    animation-delay:2s;
+    top:52%;left:5%;font-size:14px;animation-delay:2s;
 }
-
 .decorations span:nth-child(4) {
-    top:68%;
-    right:6%;
-    font-size:21px;
-    animation-delay:1.5s;
+    top:68%;right:6%;font-size:21px;animation-delay:1.5s;
 }
-
 .decorations span:nth-child(5) {
-    bottom:12%;
-    left:12%;
-    font-size:12px;
-    animation-delay:.5s;
+    bottom:12%;left:12%;font-size:12px;animation-delay:.5s;
 }
-
 .decorations span:nth-child(6) {
-    bottom:20%;
-    right:13%;
-    font-size:16px;
-    animation-delay:2.5s;
+    bottom:20%;right:13%;font-size:16px;animation-delay:2.5s;
 }
 
 .container {
@@ -172,7 +150,7 @@ body {
 
 .answer:hover:not(:disabled) {
     background:var(--accent-soft);
-    transform:translateY(-1px);
+    transform:translateY(-2px);
 }
 
 .answer:disabled {
@@ -190,6 +168,7 @@ body {
     background:#f2d7dd;
     border-color:#d88b9d;
     color:#a54e62;
+    animation:shake .35s ease;
 }
 
 .next {
@@ -208,16 +187,37 @@ body {
 
 .next:hover {
     background:#e3d8f3;
+    transform:translateY(-2px);
 }
 
 .result {
     display:none;
+    animation:appear .5s ease;
 }
 
 .result h2 {
     color:var(--text-heading);
     font-weight:normal;
-    font-size:25px;
+    font-size:26px;
+    line-height:1.5;
+    margin:22px 0;
+}
+
+@keyframes float {
+    0%,100% {transform:translateY(0) rotate(0);}
+    50% {transform:translateY(-7px) rotate(7deg);}
+}
+
+@keyframes shake {
+    0%,100% {transform:translateX(0);}
+    25% {transform:translateX(-5px);}
+    50% {transform:translateX(5px);}
+    75% {transform:translateX(-3px);}
+}
+
+@keyframes appear {
+    from {opacity:0;transform:translateY(8px);}
+    to {opacity:1;transform:translateY(0);}
 }
 
 .confetti {
@@ -237,23 +237,9 @@ body {
     }
 }
 
-@keyframes float {
-    0%,100% {
-        transform:translateY(0) rotate(0);
-    }
-    50% {
-        transform:translateY(-7px) rotate(7deg);
-    }
-}
-
 @media(max-width:400px) {
-    .container {
-        padding:24px 17px;
-    }
-
-    .question {
-        font-size:20px;
-    }
+    .container {padding:24px 17px;}
+    .question {font-size:20px;}
 }
 </style>
 </head>
@@ -297,7 +283,11 @@ body {
             <span>✦</span><i></i><span>♡</span><i></i><span>✦</span>
         </div>
 
-        <h2>♡</h2>
+        <h2 id="resultTitle"></h2>
+
+        <button class="next" id="retry" onclick="restartQuiz()">
+            Try again →
+        </button>
 
         <div class="ornament bottom">
             <span>✧</span><i></i><span>♡</span><i></i><span>✧</span>
@@ -311,36 +301,91 @@ body {
 const questions = [
     {
         question: "What's Arwa's cat's name?",
-        answers: ["Taboni", "miya", "maya"],
-        correct: 1
+        answers: [
+            {text:"Taboni",correct:false},
+            {text:"miya",correct:true},
+            {text:"maya",correct:false}
+        ]
     },
     {
-        question: "What did you use to watch on YouTube back in 2020?",
+        question: "What can you say instead of \"I'm obsessed with you\"?",
         answers: [
-            "Wattpad of BTS",
-            "Wattpad of mafia",
-            "Wattpad of Junkun"
-        ],
-        correct: 0
+            {text:"مزعوطا فك",correct:false},
+            {text:"مروووسة بك",correct:true},
+            {text:"فنحوي طبونك",correct:false}
+        ]
     },
     {
         question: "What is the name that Khouloud teases you by instead of Riham?",
-        answers: ["Ra7ma", "ri7am", "tbnmk"],
-        correct: 0
+        answers: [
+            {text:"Ra7ma",correct:true},
+            {text:"ri7am",correct:false},
+            {text:"tbnmk",correct:false}
+        ]
+    },
+    {
+        question: "Arwa l....... :",
+        answers: [
+            {text:"7za9a",correct:false},
+            {text:"bouwala",correct:true},
+            {text:"kharaya",correct:false}
+        ]
     },
     {
         question: "What's Saber fav look?",
-        answers: ["Smokey", "douyin", "naturel makeup"],
-        correct: 0
+        answers: [
+            {text:"Smokey",correct:true},
+            {text:"douyin",correct:false},
+            {text:"naturel makeup",correct:false}
+        ]
     },
     {
         question: 'After sentence "ghi rjli tlwaw wjaw 3ndk b7dhm" she said:',
         answers: [
-            "يا اااااااااه الإحراااااااااااااج",
-            "الكرامة قيدها في الغياب",
-            "بولي و متهدريش"
-        ],
-        correct: 0
+            {text:"يا اااااااااه الإحراااااااااااااج",correct:true},
+            {text:"الكرامة قيدها في الغياب",correct:false},
+            {text:"بولي و متهدريش",correct:false}
+        ]
+    },
+    {
+        question: "Instead of 7atchouni we say:",
+        answers: [
+            {text:"Taboni",correct:false},
+            {text:"7achlouni",correct:true},
+            {text:"7amouni",correct:false}
+        ]
+    },
+    {
+        question: "Lalak hiya..... :",
+        answers: [
+            {text:"ilham",correct:true},
+            {text:"tbnmk",correct:false},
+            {text:"riham",correct:false}
+        ]
+    },
+    {
+    question: "When Mbarki is with someone what does he feel like?",
+    answers: [
+        {text:"Nmla",correct:true},
+        {text:"9oziba",correct:false},
+        {text:"sli3fana",correct:false}
+    ]
+},
+    {
+        question: "Who was the victim to all the killings?",
+        answers: [
+            {text:"Arwa",correct:false},
+            {text:"luna",correct:false},
+            {text:"riham",correct:true}
+        ]
+    },
+    {
+        question: "Who always ss into Arwa?",
+        answers: [
+            {text:"Luna",correct:false},
+            {text:"khouloud",correct:true},
+            {text:"viper",correct:false}
+        ]
     }
 ];
 
@@ -352,6 +397,17 @@ const questionEl = document.getElementById("question");
 const answersEl = document.getElementById("answers");
 const nextBtn = document.getElementById("next");
 
+function shuffle(array) {
+    const shuffled = [...array];
+
+    for(let i=shuffled.length-1;i>0;i--) {
+        const j = Math.floor(Math.random()*(i+1));
+        [shuffled[i],shuffled[j]] = [shuffled[j],shuffled[i]];
+    }
+
+    return shuffled;
+}
+
 function loadQuestion() {
     answered = false;
 
@@ -361,49 +417,58 @@ function loadQuestion() {
     answersEl.innerHTML = "";
     nextBtn.style.display = "none";
 
-    q.answers.forEach((answer,index) => {
+    const randomizedAnswers = shuffle(q.answers);
+
+    randomizedAnswers.forEach(answer => {
         const button = document.createElement("button");
 
         button.className = "answer";
-        button.textContent = answer;
+        button.textContent = answer.text;
 
         button.addEventListener("click",() => {
-            checkAnswer(index);
+            checkAnswer(answer,button);
         });
 
         answersEl.appendChild(button);
     });
 }
 
-function checkAnswer(index) {
+function checkAnswer(selected,button) {
     if(answered) return;
 
     answered = true;
 
-    const q = questions[current];
     const buttons = answersEl.querySelectorAll(".answer");
 
-    buttons.forEach(button => button.disabled = true);
+    buttons.forEach(btn => btn.disabled = true);
 
-    if(index === q.correct) {
+    if(selected.correct) {
         score++;
 
-        buttons[index].classList.add("correct");
-        buttons[index].textContent = "✓ " + q.answers[index];
+        button.classList.add("correct");
+        button.textContent = "✓ " + selected.text;
 
         confetti();
 
     } else {
-        buttons[index].classList.add("wrong");
-        buttons[index].textContent = "✕ " + q.answers[index];
+        button.classList.add("wrong");
+        button.textContent = "✕ " + selected.text;
 
-        buttons[q.correct].classList.add("correct");
+        buttons.forEach(btn => {
+            const answer = questions[current].answers.find(
+                a => a.text === btn.textContent
+            );
+
+            if(answer && answer.correct) {
+                btn.classList.add("correct");
+            }
+        });
     }
 
     nextBtn.style.display = "block";
 
     nextBtn.textContent =
-        current === questions.length - 1 ? "♡" : "Next →";
+        current === questions.length-1 ? "Finish →" : "Next →";
 }
 
 function nextQuestion() {
@@ -421,22 +486,38 @@ function nextQuestion() {
 function showResult() {
     document.getElementById("quiz").style.display = "none";
 
-    const percentage = (score / questions.length) * 100;
+    const result = document.getElementById("result");
+    const title = document.getElementById("resultTitle");
+    const retry = document.getElementById("retry");
 
-    if(percentage >= 75) {
+    result.style.display = "block";
+
+    const wrong = questions.length-score;
+
+    if(wrong <= 5) {
+        title.textContent = "YAYYY GOOD JOB ♡";
+        confetti();
         confetti();
 
         setTimeout(() => {
             window.location.href = "reward.html";
-        },1800);
+        },2500);
 
     } else {
-        document.getElementById("result").style.display = "block";
-
-        setTimeout(() => {
-            window.location.href = "index.html";
-        },2500);
+        title.textContent = "are u dumb, try again";
+        retry.style.display = "block";
     }
+}
+
+function restartQuiz() {
+    current = 0;
+    score = 0;
+
+    document.getElementById("result").style.display = "none";
+    document.getElementById("quiz").style.display = "block";
+    document.getElementById("retry").style.display = "none";
+
+    loadQuestion();
 }
 
 function confetti() {
@@ -452,7 +533,7 @@ function confetti() {
         const piece = document.createElement("div");
 
         piece.className = "confetti";
-        piece.style.left = Math.random()*100 + "vw";
+        piece.style.left = Math.random()*100+"vw";
         piece.style.background =
             colors[Math.floor(Math.random()*colors.length)];
 
