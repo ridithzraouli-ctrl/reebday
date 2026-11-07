@@ -1,0 +1,349 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>♡</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Georgia, serif;
+    background: radial-gradient(circle at top, #f5eaff, #e5d5f7, #d6c1ed);
+    color: #72558e;
+    overflow-x: hidden;
+}
+
+.decorations {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.decorations span {
+    position: absolute;
+    color: rgba(139, 105, 173, 0.35);
+    animation: float 9s ease-in-out infinite;
+}
+
+.decorations span:nth-child(1) { top: 8%; left: 8%; font-size: 24px; }
+.decorations span:nth-child(2) { top: 20%; right: 12%; font-size: 19px; animation-delay: 1s; }
+.decorations span:nth-child(3) { top: 43%; left: 5%; font-size: 17px; animation-delay: 2s; }
+.decorations span:nth-child(4) { top: 65%; right: 7%; font-size: 25px; animation-delay: 3s; }
+.decorations span:nth-child(5) { top: 83%; left: 15%; font-size: 20px; animation-delay: 4s; }
+.decorations span:nth-child(6) { top: 90%; right: 20%; font-size: 16px; animation-delay: 2s; }
+.decorations span:nth-child(7) { top: 35%; right: 30%; font-size: 18px; animation-delay: 5s; }
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-18px) rotate(12deg); }
+}
+
+main {
+    position: relative;
+    z-index: 1;
+    width: min(900px, 92%);
+    margin: 35px auto;
+    padding: 25px;
+    background: rgba(255, 255, 255, 0.48);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 24px;
+    box-shadow: 0 10px 35px rgba(105, 75, 140, 0.12);
+}
+
+.divider {
+    text-align: center;
+    color: #a184bd;
+    margin: 8px 0 24px;
+    letter-spacing: 5px;
+}
+
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+}
+
+.item {
+    overflow: hidden;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 15px rgba(105, 75, 140, 0.09);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.item:hover {
+    transform: translateY(-3px);
+}
+
+.item img,
+.item video {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 420px;
+    object-fit: contain;
+}
+
+.link-item {
+    min-height: 90px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    color: #765795;
+    font-size: 20px;
+    transition: background 0.2s;
+}
+
+.link-item:hover {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.viewer {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    background: rgba(39, 25, 53, 0.88);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.viewer.active {
+    display: flex;
+}
+
+.viewer-content {
+    position: relative;
+    max-width: 95vw;
+    max-height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.viewer img {
+    max-width: 85vw;
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: 10px;
+}
+
+.viewer button {
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-family: Georgia, serif;
+    font-size: 30px;
+    width: 44px;
+    height: 50px;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+.viewer button:hover {
+    background: rgba(255, 255, 255, 0.35);
+}
+
+.close {
+    position: absolute;
+    top: -48px;
+    right: 0;
+}
+
+.previous {
+    margin-right: 12px;
+}
+
+.next {
+    margin-left: 12px;
+}
+
+@media (max-width: 500px) {
+    main {
+        padding: 15px;
+        margin: 18px auto;
+    }
+
+    .gallery {
+        grid-template-columns: 1fr;
+    }
+
+    .viewer img {
+        max-width: 72vw;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="decorations">
+    <span>✦</span>
+    <span>♡</span>
+    <span>✧</span>
+    <span>✦</span>
+    <span>♡</span>
+    <span>✧</span>
+    <span>✦</span>
+</div>
+
+<main>
+    <div class="divider">✦ — ♡ — ✦</div>
+
+    <div class="gallery">
+
+        <div class="item" onclick="openLetter()">
+            <img src="IMG_20261107_235358_596.jpg" alt="">
+        </div>
+
+        <div class="item">
+            <img src="IMG_20261107_235401_791.jpg" alt="">
+        </div>
+
+        <div class="item">
+            <img src="IMG_20261107_235404_191.jpg" alt="">
+        </div>
+
+        <div class="item">
+            <img src="IMG_20261107_235406_256.jpg" alt="">
+        </div>
+
+        <div class="item">
+            <img src="IMG_20261107_235408_407.jpg" alt="">
+        </div>
+
+        <div class="item">
+            <img src="IMG_20261107_235411_187.jpg" alt="">
+        </div>
+
+        <div class="item">
+            <img src="IMG_20261107_235413_554.jpg" alt="">
+        </div>
+
+        <div class="item">
+            <img src="IMG_20261107_235415_737.jpg" alt="">
+        </div>
+
+        <div class="item">
+            <img src="IMG_20261107_235418_519.jpg" alt="">
+        </div>
+
+        <div class="item">
+            <img src="IMG_20261107_235421_271.jpg" alt="">
+        </div>
+
+        <div class="item">
+            <img src="IMG_20261107_235423_784.jpg" alt="">
+        </div>
+
+        <div class="item" onclick="openVideo()">
+            <video src="VID-20261105-WA0015.mp4" muted playsinline preload="metadata"></video>
+        </div>
+
+        <a class="item link-item"
+           href="https://open.spotify.com/playlist/6o0eAGMYqtjWw3ohoIQBOM?si=LyQlmWbEReadNpOl7BmspQ&utm_source=copy-link&pi=J1pQFaCxSGym8"
+           target="_blank" rel="noopener">
+            music
+        </a>
+
+        <a class="item link-item"
+           href="https://pin.it/6G6uFQtmH"
+           target="_blank" rel="noopener">
+            pinterest board
+        </a>
+
+    </div>
+
+    <div class="divider" style="margin-top:24px;">✦ — ♡ — ✦</div>
+</main>
+
+<div class="viewer" id="letterViewer" onclick="closeLetter(event)">
+    <div class="viewer-content" onclick="event.stopPropagation()">
+        <button class="close" onclick="closeLetter()">×</button>
+        <button class="previous" onclick="changeLetter(-1)">‹</button>
+        <img id="letterImage" src="" alt="">
+        <button class="next" onclick="changeLetter(1)">›</button>
+    </div>
+</div>
+
+<div class="viewer" id="videoViewer" onclick="closeVideo(event)">
+    <div class="viewer-content" onclick="event.stopPropagation()">
+        <button class="close" onclick="closeVideo()">×</button>
+        <video id="fullVideo" controls playsinline style="max-width:90vw;max-height:85vh;border-radius:10px;"></video>
+    </div>
+</div>
+
+<script>
+const letterParts = [
+    "IMG_20261107_235358_596.jpg",
+    "IMG_20261107_235357_054.jpg"
+];
+
+let letterIndex = 0;
+
+function openLetter() {
+    letterIndex = 0;
+    updateLetter();
+    document.getElementById("letterViewer").classList.add("active");
+}
+
+function updateLetter() {
+    document.getElementById("letterImage").src = letterParts[letterIndex];
+}
+
+function changeLetter(direction) {
+    letterIndex = (letterIndex + direction + letterParts.length) % letterParts.length;
+    updateLetter();
+}
+
+function closeLetter(event) {
+    if (event && event.target !== document.getElementById("letterViewer")) return;
+    document.getElementById("letterViewer").classList.remove("active");
+}
+
+function openVideo() {
+    const viewer = document.getElementById("videoViewer");
+    const video = document.getElementById("fullVideo");
+    video.src = "VID-20261105-WA0015.mp4";
+    viewer.classList.add("active");
+    video.play();
+}
+
+function closeVideo(event) {
+    if (event && event.target !== document.getElementById("videoViewer")) return;
+    const video = document.getElementById("fullVideo");
+    video.pause();
+    video.removeAttribute("src");
+    video.load();
+    document.getElementById("videoViewer").classList.remove("active");
+}
+
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+        closeLetter();
+        closeVideo();
+    }
+
+    if (document.getElementById("letterViewer").classList.contains("active")) {
+        if (event.key === "ArrowRight") changeLetter(1);
+        if (event.key === "ArrowLeft") changeLetter(-1);
+    }
+});
+</script>
+
+</body>
+      </html>
+          
